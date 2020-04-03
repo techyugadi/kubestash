@@ -1,0 +1,56 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "jetty.fullname" . }}
+  labels:
+{{ include "jetty.labels" . | indent 4 }}
+spec:
+  replicas: {{ .Values.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "jetty.name" . }}
+      app.kubernetes.io/instance: {{ .Release.Name }}
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "jetty.name" . }}
+        app.kubernetes.io/instance: {{ .Release.Name }}
+    spec:
+      containers:
+        - name: jettyssl
+          image: {{ .Values.image.repository }}:{{ .Values.image.tag }}
+          imagePullPolicy: {{ .Values.image.pullPolicy | quote }}
+          ports:
+            - name: http
+              containerPort: {{ .Values.httpservice.internalPort }}
+              protocol: TCP
+            - name: https
+              containerPort: {{ .Values.httpsservice.internalPort }}
+              protocol: TCP
+          env:
+            - name: JETTY_BASE
+              value: "/var/lib/jetty"
+            - name: JETTY_SSLCONTEXT_KEYSTOREPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets }}
+                  key: keystorepass
+            - name: JETTY_SSLCONTEXT_KEYMANAGERPASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: {{ .Values.secrets }}
+                  key: keymgrpass
+          volumeMounts:
+            - name: webappdir
+              mountPath: {{ .Values.deploy.jetty_base }}/{{ .Values.deploy.directory }}
+            - name: keystorefile
+              mountPath: {{ .Values.deploy.jetty_base }}/etc/keystore
+      volumes:
+        - name: webappdir
+          hostPath:
+            path: {{ .Values.deploy.hostPath }}
+            type: Directory
+        - name: keystorefile
+          hostPath:
+            path: {{ .Values.sslstore.hostPath }}/{{ .Values.sslstore.filename }}
+            type: File
