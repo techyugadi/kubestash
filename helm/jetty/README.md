@@ -1,7 +1,7 @@
 #### Helm Chart for Jetty Application Server
 This helm chart uses the official [jetty](https://hub.docker.com/_/jetty) docker image.
 
-Modify the `deploy.hostPath` value in values.yaml to point to the path on your host file system where your wab application archives (.war) are located.
+Modify the `deploy.hostPath` value in values.yaml to point to the path on your host file system, where your web application archives (.war) are located.
 
 Then run: `helm install [NAME] .`
 
