@@ -1,7 +1,7 @@
 #### Helm Chart for Jetty Application Server with support for HTTPS
 This helm chart uses the [techyugadi/jetty](https://hub.docker.com/r/techyugadi/jetty-ssl) docker image.
 
-Modify the `deploy.hostPath` value in values.yaml to point to the path on your host file system where your wab application archives (.war) are located.
+Modify the `deploy.hostPath` value in values.yaml to point to the path on your host file system, where your web application archives (.war) are located.
 
 Create a SSL key using a tool such as `keytool`, and copy the keystore file to {{ .Values.sslstore.hostPath }}
 
