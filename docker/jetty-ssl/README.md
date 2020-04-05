@@ -1,4 +1,4 @@
-This image of java-based Jetty Application Server is an enhancement of the official Jetty docker image (`jetty`) , to support **HTTPS**.
+This image of java-based Jetty Application Server is an enhancement of the official [Jetty docker image] (https://hub.docker.com/_/jetty) , to support **HTTPS**.
 
 Jetty comes bundled with HTTPS support, with a pre-installed keystore (`$JETTY_BASE/etc/keystore`). To use the default SSL set-up simply run:
 
