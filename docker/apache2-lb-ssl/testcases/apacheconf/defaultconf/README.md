@@ -9,7 +9,7 @@ cd ~/github/kubestash/docker/apache2-lb-ssl/dockerfiles
 docker build -t apache2lbssl .
 ```
 
-But, just to test out the out-of-the-box nginx configuration, the above two configuration files are also placed in this repo. To start up apache2 in default mode (without any load-balancer / reverse-proxy), simply run: \
+But, just to test out the default Apache2 web server configuration, the above two configuration files are also placed in this repo. To start up apache2 in default mode (without any load-balancer / reverse-proxy), simply run: \
 `docker run -v ~/github/kubestash/docker/apache2-lb-ssl/testcases/apacheconf/defaultconf/sites-available:/etc/apache2/sites-available -p 80:80 --name mywebsrv apache2lbssl`
 
 (That is, volume-mount the above two default virtual host configurations.)

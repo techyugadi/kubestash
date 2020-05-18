@@ -17,7 +17,7 @@ mvn mvn clean install -DskipTests=true
 Copy the .war file to a suitable location: \
 ```
 mkdir -p /tmp/webapps
-cp target/mywebapp.war /tmp/webapps/ROOT.war
+cp target/mywebapp.war /tmp/webapps/mywebapp.war
 ```
 
 2. Create a docker network: `docker network create mynetwork`
