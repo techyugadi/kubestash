@@ -1,8 +1,10 @@
 This Dockerfile and related files can be used to build an Apache2 web server image with common modules for rewrite, reverse-proxy and load-balancing installed, along with SSL proxy, redirect and passthrough support.
 
-There are several testcases in the `testcases` directory to try out the various Virtual Host configurations to support these features.
+**Dockerhub**: A prebuilt docker image is available from Dockerhub: `techyugadi/apache2-lb-ssl`. \
+You may simply run this image as: \
+`docker run -v ~/apacheconf/sites-available:/etc/apache2/sites-available -p 80:80 techyugadi/apache2-lb-ssl`
 
-**Dockerhub**: A prebuilt docker image is available from Dockerhub: `techyugadi/apache2-lb-ssl`.
+There are several testcases in the `testcases` directory to try out the various Virtual Host configurations to support these features.
 
 1. [ Apache 2 web server default configuration ] (https://github.com/techyugadi/kubestash/tree/master/docker/apache2-lb-ssl/testcases/apacheconf/defaultconf)
 
