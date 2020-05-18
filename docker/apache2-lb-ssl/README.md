@@ -2,8 +2,8 @@ This Dockerfile and related files can be used to build an Apache2 web server ima
 
 **Dockerhub**: A prebuilt docker image is available from Dockerhub: `techyugadi/apache2-lb-ssl`. \
 You may simply run this image, for example: \
-`docker run -v ~/apacheconf/sites-available:/etc/apache2/sites-available -p 80:80 techyugadi/apache2-lb-ssl`
-Note: the exact command (particularly volume mounts will be different for each configuration. Please see examples below.)
+`docker run -v ~/apacheconf/sites-available:/etc/apache2/sites-available -p 80:80 techyugadi/apache2-lb-ssl` \
+Note: the exact command (particularly volume mounts) will be different for each configuration. Please see examples below.
 
 There are several testcases in the `testcases` directory to try out the various Virtual Host configurations to support these features.
 
