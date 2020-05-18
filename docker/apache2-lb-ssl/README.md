@@ -2,7 +2,7 @@ This Dockerfile and related files can be used to build an Apache2 web server ima
 
 There are several testcases in the `testcases` directory to try out the various Virtual Host configurations to support these features.
 
-1. [Apache 2 web server default configuration] ( https://github.com/techyugadi/kubestash/tree/master/docker/apache2-lb-ssl/testcases/apacheconf/defaultconf )
+1. [ Apache 2 web server default configuration ] (https://github.com/techyugadi/kubestash/tree/master/docker/apache2-lb-ssl/testcases/apacheconf/defaultconf)
 
 2. [ Reverse Proxy Configuration ] (https://github.com/techyugadi/kubestash/tree/master/docker/apache2-lb-ssl/testcases/apacheconf/revproxy)
 
