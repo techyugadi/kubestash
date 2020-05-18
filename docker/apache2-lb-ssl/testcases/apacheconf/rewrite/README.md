@@ -29,11 +29,11 @@ cp target/mywebapp.war /tmp/webapps/ROOT.war
 `docker run -p 8081:8080 -v /tmp/webapps:/var/lib/jetty/webapps --name myappsrv2 --network mynetwork jetty`
 
 5. Start apache web server (docker) on the same network using a virtual host configuration with reverse proxy enabled. \
-`docker run -v ~/github/kubestash/docker/apache2-lb-ssl/testcases/apacheconf/proxylb/sites-available:/etc/apache2/sites-available -p 80:80 --network mynetwork --name mywebsrv apache2lbssl`
+`docker run -v ~/github/kubestash/docker/apache2-lb-ssl/testcases/apacheconf/rewrite/sites-available:/etc/apache2/sites-available -p 80:80 --network mynetwork --name mywebsrv apache2lbssl`
 
 (That is, volume-mount the above virtual host configuration: note that it refers to the two Jetty containers named `myappsrv1` and `myappsrv2`.)
 
-**Testing**: Simply access the URL `http://localhost/mywebapp` from a browser, SEVERAL TIMES. Note that no trailing slash (/) is needed. \
+**Testing**: Simply access the URL `http://localhost/mywebapp` from a browser, SEVERAL TIMES. Note that trailing slash (/) is NOT needed. \
 Each time, the response will come from a different backend Jetty instance. This can be verified from messages like: \
 ```
 Hello ! Response from: 75b9f78554a2/172.21.0.3. You landed here 1 times
