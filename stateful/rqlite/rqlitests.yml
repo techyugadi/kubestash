@@ -1,0 +1,103 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: rqlite
+  labels:
+    app: rqlite
+spec:
+  ports:
+  - port: 4001
+    name: httpport
+  - port: 4002
+    name: raftport
+  clusterIP: None
+  selector:
+    app: rqlite
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: rqdb
+spec:
+  serviceName: "rqlite"
+  replicas: 3
+  updateStrategy:
+    type: RollingUpdate
+  podManagementPolicy: OrderedReady
+  selector:
+    matchLabels:
+      app: rqlite
+  template:
+    metadata:
+      labels:
+        app: rqlite
+    spec:
+      terminationGracePeriodSeconds: 90
+      containers:
+      - name: rqlite
+        image: rqlite/rqlite
+        env:
+        - name: MY_POD_NAME
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.name
+        - name: MY_POD_NAMESPACE
+          valueFrom:
+            fieldRef:
+              fieldPath: metadata.namespace
+        ports:
+        - containerPort: 4001
+          name: httpport
+        - containerPort: 4002
+          name: raftport
+        volumeMounts:
+        - name: data
+          mountPath: /rqlite/file/data
+        livenessProbe:
+          httpGet:
+            path: /status
+            port: 4001
+          initialDelaySeconds: 30
+          periodSeconds: 10
+          timeoutSeconds: 5
+        readinessProbe:
+          tcpSocket:
+            port: 4002
+          initialDelaySeconds: 10
+          timeoutSeconds: 2
+        lifecycle:
+          preStop:
+            exec:
+              command:
+              - bash
+              - "-c"
+              - |
+                set -ex
+                STATE=`curl $MY_POD_NAME.rqlite.$MY_POD_NAMESPACE.svc.cluster.local:4001/status?pretty | grep state | cut -d ':' -f 2 | xargs | tr -d '"' | tr -d ','`
+                if [[ "$STATE" == "Follower" ]]; then
+                  MASTER=`curl $MY_POD_NAME.rqlite.$MY_POD_NAMESPACE.svc.cluster.local:4001/status?pretty | grep redirect | cut -d ':' -f 2 | xargs -0 | tr -d '"' | xargs`
+                  echo "{\"id\": \"$MY_POD_NAME\"}" >> /tmp/remnode.json
+                  curl -XDELETE $MASTER:4001/remove -d @/tmp/remnode.json
+                fi
+        command:
+        - bash
+        - "-c"
+        - |
+          set -ex
+          [[ `hostname` =~ -([0-9]+)$ ]] || exit 1
+          ordinal=${BASH_REMATCH[1]}
+          if [[ $ordinal -eq 0 ]]; then
+            rqlited -node-id $(MY_POD_NAME) -http-addr rqdb-0.rqlite.$(MY_POD_NAMESPACE).svc.cluster.local:4001 -raft-addr rqdb-0.rqlite.$(MY_POD_NAMESPACE).svc.cluster.local:4002 /rqlite/file/data
+          elif [[ $ordinal -lt 5 ]]; then
+            rqlited -node-id $(MY_POD_NAME) -http-addr $(MY_POD_NAME).rqlite.$(MY_POD_NAMESPACE).svc.cluster.local:4001 -raft-addr $(MY_POD_NAME).rqlite.$(MY_POD_NAMESPACE).svc.cluster.local:4002 -join http://rqdb-0.rqlite.$(MY_POD_NAMESPACE).svc.cluster.local:4001,http://rqdb-1.rqlite.$(MY_POD_NAMESPACE).svc.cluster.local:4001,http://rqdb-2.rqlite.$(MY_POD_NAMESPACE).svc.cluster.local:4001 /rqlite/file/data
+          else
+            rqlited -node-id $(MY_POD_NAME) -http-addr $(MY_POD_NAME).rqlite.$(MY_POD_NAMESPACE).svc.cluster.local:4001 -raft-addr $(MY_POD_NAME).rqlite.$(MY_POD_NAMESPACE).svc.cluster.local:4002 -join http://rqdb-0.rqlite.$(MY_POD_NAMESPACE).svc.cluster.local:4001,http://rqdb-1.rqlite.$(MY_POD_NAMESPACE).svc.cluster.local:4001,http://rqdb-2.rqlite.$(MY_POD_NAMESPACE).svc.cluster.local:4001 -raft-non-voter=true /rqlite/file/data
+          fi
+  volumeClaimTemplates:
+  - metadata:
+      name: data
+    spec:
+      accessModes: [ "ReadWriteOnce" ]
+      resources:
+        requests:
+          storage: 512Mi
