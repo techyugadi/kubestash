@@ -45,10 +45,10 @@ Also, pull the rqlite docker image in advance: `docker pull rqlite/rqlite`.
 ###### Scale-Out and Scale-In
 1. For simplicity, we will clean up and start the test from scratch (although this is not necessary). Stop and delete minikube: `sudo minikube stop` followed by `sudo minikube delete`. Then start minikube again: `sudo minikube start --vm-driver=none`.
 2. Create three PVs, and again create the StatefulSet, and create a table with a few rows (see above).
-3. Scale-out: From a terminal, run `sudo kubectl scale sts rqdb --replicas=5`
+3. Scale-out: First create two more PVs. Then from a terminal, run `sudo kubectl scale sts rqdb --replicas=5`
 4. Keep watching the pod statuses: two new pods will be created in sequence, as in : `rqdb-3   1/1     Running             0          26s`.
 5. Open a shell in each of the new pods, and ensure that the data is accessible, using rqlite SQL prompt.
-6. Scale-in: From a terminal , run `sudo kubectl scale sts rqdb --replicas=3`
+6. Scale-in: From a terminal , run `sudo kubectl scale sts rqdb --replicas=3`. PVs have to be manually deleted.
 7. Keep watching the pod statuses. It should indicate something like: `rqdb-4   0/1     Terminating         0          5m23s`
 
 ###### Non-voter Replicas
