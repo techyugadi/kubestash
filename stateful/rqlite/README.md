@@ -18,7 +18,7 @@ Also, pull the rqlite docker image in advance: `docker pull rqlite/rqlite`.
 1. Start minikube: `sudo minikube start --vm-driver=none`
 2. Create at least three persistent volumes (see `pv.yml`: change the PV name to `pv0`, `pv1`, and `pv2` respectively, and let the file paths be `/tmp/pv0`, `/tmp/pv1`, and `/tmp/pv2` respectively.), as in `sudo kubectl apply -f pv0.yml`.
 3. Create the cluster (StatefulSet): `sudo kubectl apply -f rqsts.yml`.
-4. In another terminal, observe the replicas come up in a sequence: `sudo kubectl get pods -l app=rqlite -w`. When all the replicas are running, we should see aoutput like: `rqdb-2   1/1     Running             0          28s` for each of the replicas (`rqdb-0`, `rqdb-1`, and `rqdb-2`).
+4. In another terminal, observe the replicas come up in a sequence: `sudo kubectl get pods -l app=rqlite -w`. When all the replicas are running, we should see an output like: `rqdb-2   1/1     Running             0          28s` for each of the replicas (`rqdb-0`, `rqdb-1`, and `rqdb-2`).
 5. Simultaneously with Step 4 above, check the logs of each replica, in separate terminals: `sudo kubectl logs -f rqdb-0` (similarly for `rqdb-1` and `rqdb-2`).For the Follower nodes, there should be a message like: `[rqlited] 2020/06/27 07:37:29 successfully joined cluster at http://rqdb-0.rqlite.default.svc.cluster.local:4001/join`. On the Leader, there will be messages like: `[store] 2020/06/27 07:37:29 received request to join node at 172.17.0.5:4002`, and `2020-06-27T07:37:29.557Z [INFO]  raft: Added peer rqdb-1, starting replication`.
 6. Check that the Persistent Volume Claims are bound: `sudo kubectl get pvc`. There should be an output corresponding to each replica, like: `data-rqdb-0   Bound    pv0      512Mi      RWO            standard       6m23s`.
 
@@ -60,5 +60,5 @@ TO DO: \
 i. PodAntiAffinityRules may be added, suitable for your Kubernetes environment. \
 ii. Storage space should obviously be increased from 512 MB for each replica, when you want to store more data. \
 iii. Cluster Domain may be set appropriately (instead of using the default `cluster.local`). \
-iv. A separate service can be created for each pod, if needed, to access the HTTP port 4001 for each pod externally.
-
+iv. A separate service can be created for each pod, if needed, to access the HTTP port 4001 for each pod externally. \
+v. When a replica (pod) is deleted, it is shut down gracefully, i.e. with a `preStop`. You can experiment with a non-graceful shut down by commenting out this lifecycle hook - it still works though the Leader continues to ping the replica till it comes up agan.
