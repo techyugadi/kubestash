@@ -43,7 +43,7 @@ Also, pull the rqlite docker image in advance: `docker pull rqlite/rqlite`.
 6. Now open a shell in the (restarted) `rqdb-0` pod, and check from an rqlite SQL prompt, that the data inserted when it was down, is accessible: `select * from mytab`.
 
 ###### Scale-Out and Scale-In
-1. For simplicity, we will clean up and start the test from scratch (although this is not necessary). Stop and delete minikube: `sudo minikube stop` followed by `sudo minikube delete`. Then start minikube again: `sudo minikube start --vm-driver=none`
+1. For simplicity, we will clean up and start the test from scratch (although this is not necessary). Stop and delete minikube: `sudo minikube stop` followed by `sudo minikube delete`. Then start minikube again: `sudo minikube start --vm-driver=none`.
 2.Create three PVs, and again create the StatefulSet, and create a table with a few rows (see above).
 3. Scale-out: From a terminal, run `sudo kubectl scale sts rqdb --replicas=5`
 4. Keep watching the pod statuses: two new pods will be created in sequence, as in : `rqdb-3   1/1     Running             0          26s`.
@@ -55,3 +55,10 @@ Also, pull the rqlite docker image in advance: `docker pull rqlite/rqlite`.
 In the Scale-out test above, if the maximum number of voter nodes is exceeded (5 in our code, but it can be changed), when a new replica comes up, there should be a log message in the Leader node, like: `2020-06-27T09:19:55.934Z [INFO]  raft: pipelining replication to peer {Nonvoter rqdb-3 172.17.0.7:4002}`.
 
 Note: The above tests can be performed with minikube and vm-driver set to docker as well (without using sudo): `minikube start --vm-driver=docker`.
+
+TO DO: \
+i. PodAntiAffinityRules may be added, suitable for your Kubernetes environment. \
+ii. Storage space should obviously be increased from 512 MB for each replica, when you want to store more data. \
+iii. Cluster Domain may be set appropriately (instead of using the default `cluster.local`). \
+iv. A separate service can be created for each pod, if needed, to access the HTTP port 4001 for each pod externally.
+
