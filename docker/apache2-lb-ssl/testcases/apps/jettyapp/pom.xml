@@ -8,7 +8,7 @@
     <name>${project.artifactId}</name>
     <properties>
         <spring.version>4.3.25.RELEASE</spring.version>
-        <junit.version>4.12</junit.version>
+        <junit.version>4.13.1</junit.version>
         <jdk.version>1.8</jdk.version>
         <jetty.version>9.3.10.v20160621</jetty.version>
         <jetty.port>8080</jetty.port>
