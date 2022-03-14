@@ -1,4 +1,7 @@
 #### Kubernetes StatefulSet for rqlite (sqlite database cluster)
+
+<strong>Note</strong>: Please follow the [new documentation](https://github.com/rqlite/rqlite/blob/master/DOC/KUBERNETES.md) for deploying latest version of rqlite on Kubernetes. This documentation includes a new YAML for setting up rqlite stateful set.
+
 In many applications sqlite is used as a lightweight database and it is usually bundled  with the android platform. While sqlite does not support replication or clustering, there is an open source project called rqlite, to create a cluster of sqlite database instances, with one Leader and many Followers. 
 
 Here, we have a Kubernetes StatefulSet to deploy [rqlite](https://github.com/rqlite/rqlite) on a Kubernetes environment.
